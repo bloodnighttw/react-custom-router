@@ -2,7 +2,7 @@ import { match , type MatchFunction } from "path-to-regexp";
 
 // Utility type to extract parameter names from route strings
 
-type MatchParams<T extends string> = T extends `:${infer Param}`
+type MatchParams<T extends string> = T extends `${infer _Begin}:${infer Param}`
   ? Param
   : never;
 
@@ -23,7 +23,7 @@ type ExtractMatch<T extends string> =
     ? ExtractMatch<Rest> | MatchParams<Start>
     : MatchParams<T>;
 
-type WildcardParams<T extends string> = T extends `*${infer Param}`
+type WildcardParams<T extends string> = T extends `${infer _Begin}*${infer Param}`
   ? Param
   : never;
 
