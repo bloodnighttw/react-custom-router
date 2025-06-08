@@ -49,29 +49,23 @@ export type RouterParams<T extends string> = {
     : string | undefined;
 };
 
-const str = ":asd{/:ssss}/asd/*arr1/asd/*arr2" as const;
-const b = "/:id{/:aaa}";
-type A = ExtractMatch<typeof str>;
-type B = ExtrachWildcard<typeof str>;
-type C = RouterParams<typeof str>;
-type D = ExtractOptionalMatch<typeof b>;
-type E = RouterParams<typeof b>;
-
 interface RouteProp<T extends string> {
   path: T;
   component: React.ComponentType;
   sensitive?: boolean; // Optional, default is false
 }
 
-export interface Router<T extends string = string> {
+export interface RouterData<T extends string> {
   matchFn: MatchFunction<Partial<Record<string, string | string[]>>>;
   component: React.ComponentType;
   _path?: T; // Optional path for internal use
 }
 
+export type Router<T extends string = string> = () => RouterData<T>;
+
 export function createStaticRouter<T extends string>(
   props: RouteProp<T>
-): Router<T> {
+): RouterData<T> {
   const matchFn = match(props.path, { sensitive: props.sensitive });
 
   return {
@@ -80,12 +74,19 @@ export function createStaticRouter<T extends string>(
   };
 }
 
-export function useParams<T extends string>(
-  router: Router<T>
-): RouterParams<T> {
-  const match = router.matchFn(window.location.pathname);
-  if (!match) {
-    throw new Error(`No match found for paath: ${window.location.pathname}`);
-  }
-  return match.params as RouterParams<T>;
+let paramsCache: unknown = {};
+
+export function setParamsCache<T extends string>(
+  params: RouterParams<T>
+): void {
+  paramsCache = params;
+}
+
+type RouterPath<T extends Router> = T extends () => RouterData<infer P>
+  ? P
+  : never;
+
+export function useParams<T extends Router>(
+): RouterParams<RouterPath<T>> {
+  return paramsCache as RouterParams<RouterPath<T>>;
 }
