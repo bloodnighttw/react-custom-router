@@ -17,7 +17,7 @@ export function OuoRouter(props: ComponentProps) {
         const match = route.matchFn(path);
         if (match) {
             setParamsCache(match.params);
-            return <route.component />;
+            return <route.component key={route.path}/>;
         }
     }
     

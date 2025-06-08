@@ -58,7 +58,7 @@ interface RouteProp<T extends string> {
 export interface RouterData<T extends string> {
   matchFn: MatchFunction<Partial<Record<string, string | string[]>>>;
   component: React.ComponentType;
-  _path?: T; // Optional path for internal use
+  path: T; // Optional path for internal use
 }
 
 export type Router<T extends string = string> = () => RouterData<T>;
@@ -69,6 +69,7 @@ export function createStaticRouter<T extends string>(
   const matchFn = match(props.path, { sensitive: props.sensitive });
 
   return {
+    path: props.path,
     matchFn: matchFn,
     component: props.component,
   };
