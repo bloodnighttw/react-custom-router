@@ -3,6 +3,7 @@ import { createStaticRouter, useParams } from "./utils/router";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import { useState } from "react";
+import Link from "./utils/link";
 
 export const ROUTER = () =>
   createStaticRouter({
@@ -36,6 +37,9 @@ function Test() {
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR asdasd
         </p>
+        <Link to={ROUTER} params={{
+          id: "123",
+        }}>hello</Link>
       </div>
     </div>
   );

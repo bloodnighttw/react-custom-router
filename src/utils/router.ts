@@ -1,4 +1,4 @@
-import { match , type MatchFunction } from "path-to-regexp";
+import { match, type MatchFunction } from "path-to-regexp";
 
 // Utility type to extract parameter names from route strings
 
@@ -23,9 +23,8 @@ type ExtractMatch<T extends string> =
     ? ExtractMatch<Rest> | MatchParams<Start>
     : MatchParams<T>;
 
-type WildcardParams<T extends string> = T extends `${infer _Begin}*${infer Param}`
-  ? Param
-  : never;
+type WildcardParams<T extends string> =
+  T extends `${infer _Begin}*${infer Param}` ? Param : never;
 
 type ExtrachWildcard<T extends string> =
   T extends `${infer Start}{${infer _MID}}${infer Rest}`
@@ -35,18 +34,15 @@ type ExtrachWildcard<T extends string> =
     : WildcardParams<T>;
 
 export type RouterParams<T extends string> = {
-  [K in
-    | ExtractMatch<T>
-    | ExtrachWildcard<T>
-    | ExtractOptionalMatch<T>
-    | ExtractOptionalWildcard<T>
-  ]: K extends ExtrachWildcard<T>
+  [K in ExtractMatch<T> | ExtrachWildcard<T>]: K extends ExtrachWildcard<T>
     ? string[]
-    : K extends ExtractOptionalWildcard<T>
-    ? string[] | undefined
-    : K extends ExtractMatch<T>
-    ? string
-    : string | undefined;
+    : string;
+} & {
+  [K in
+    | ExtractOptionalMatch<T>
+    | ExtractOptionalWildcard<T>]?: K extends ExtractOptionalWildcard<T>
+    ? string[]
+    : string;
 };
 
 interface RouteProp<T extends string> {
@@ -87,7 +83,6 @@ type RouterPath<T extends Router> = T extends () => RouterData<infer P>
   ? P
   : never;
 
-export function useParams<T extends Router>(
-): RouterParams<RouterPath<T>> {
+export function useParams<T extends Router>(): RouterParams<RouterPath<T>> {
   return paramsCache as RouterParams<RouterPath<T>>;
 }
